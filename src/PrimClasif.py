@@ -34,6 +34,8 @@ from keras.utils import plot_model
 from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
 
+import time
+
 prefijo=''
 path_datos=('../data'+prefijo+'/')
 path_results=('../results'+prefijo+'/')
@@ -44,3 +46,16 @@ Y_df=pd.read_csv(path_datos+'YTrn.txt',sep='  ',header=None)
 Xtest_df=pd.read_csv(path_datos+'XTest.txt',sep='  ',header=None)
 Ytest_df=pd.read_csv(path_datos+'YTest.txt',sep='  ',header=None)
 
+#TODO Train Val split
+
+
+""" 
+KNN
+"""
+
+start_t_knn = time.time()
+
+
+elapsed_t_knn = time.time() - start_t_knn
+
+print('Time elapsed for kNN %f', elapsed_t_knn)
