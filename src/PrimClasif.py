@@ -40,6 +40,10 @@ prefijo=''
 path_datos=('../data'+prefijo+'/')
 path_results=('../results'+prefijo+'/')
 
+random_st=42 
+seed = 7 
+np.random.seed(seed)
+
 #X_df=pd.read_csv(path_datos+'XTrn.txt',usecols=['NALLParticlesTotal','MUTotal','ELTotal','Zenith','Energy'])
 X_df=pd.read_csv(path_datos+'XTrn.txt',sep='  ',header=None)
 Y_df=pd.read_csv(path_datos+'YTrn.txt',sep='  ',header=None)
