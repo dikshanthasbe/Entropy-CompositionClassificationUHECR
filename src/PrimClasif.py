@@ -47,8 +47,21 @@ np.random.seed(seed)
 #X_df=pd.read_csv(path_datos+'XTrn.txt',usecols=['NALLParticlesTotal','MUTotal','ELTotal','Zenith','Energy'])
 X_df=pd.read_csv(path_datos+'XTrn.txt',sep='  ',header=None)
 Y_df=pd.read_csv(path_datos+'YTrn.txt',sep='  ',header=None)
-Xtest_df=pd.read_csv(path_datos+'XTest.txt',sep='  ',header=None)
-Ytest_df=pd.read_csv(path_datos+'YTest.txt',sep='  ',header=None)
+X_test_df=pd.read_csv(path_datos+'XTest.txt',sep='  ',header=None)
+Y_test_df=pd.read_csv(path_datos+'YTest.txt',sep='  ',header=None)
+
+scalerX = StandardScaler()  
+scalerX.fit(X_df)  
+
+scalerY = StandardScaler()  
+scalerY.fit(Y_df) 
+
+X_df_norm = scalerX.transform(X_df)  
+X_test_df_norm = scalerX.transform(X_test_df)  
+
+Y_df_norm = scalerY.transform(Y_df)  
+Y_test_df_norm = scalerY.transform(Y_test_df)  
+
 
 #TODO Train Val split
 
