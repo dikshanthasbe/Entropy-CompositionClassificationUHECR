@@ -38,7 +38,9 @@ prefijo=''
 path_datos=('../data'+prefijo+'/')
 path_results=('../results'+prefijo+'/')
 
-X_df=pd.read_csv(path_datos+'XTrn.txt',header=None,usecols=range(5))
-Y_df=pd.read_csv(path_datos+'YTrn.txt',header=None,usecols=range(1))
-Xtest_df=pd.read_csv(path_datos+'XTest.txt',header=None,usecols=range(5))
-Ytest_df=pd.read_csv(path_datos+'YTest.txt',header=None,usecols=range(1))
+#X_df=pd.read_csv(path_datos+'XTrn.txt',usecols=['NALLParticlesTotal','MUTotal','ELTotal','Zenith','Energy'])
+X_df=pd.read_csv(path_datos+'XTrn.txt',sep='  ',header=None)
+Y_df=pd.read_csv(path_datos+'YTrn.txt',sep='  ',header=None)
+Xtest_df=pd.read_csv(path_datos+'XTest.txt',sep='  ',header=None)
+Ytest_df=pd.read_csv(path_datos+'YTest.txt',sep='  ',header=None)
+
