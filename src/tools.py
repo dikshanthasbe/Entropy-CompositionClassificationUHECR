@@ -11,10 +11,10 @@ calc_error_n_plot
  given the Y, Y_pred and a string (label) that indicates if it's train or test
 """
 def calc_error_n_plot(Y,Y_pred,label):
-    print(classification_report(np.argmax(Y,axis=1), np.argmax(Y_pred,axis=1)))
+    print(classification_report(Y, Y_pred))
         
     # Compute confusion matrix
-    cnf_matrix = confusion_matrix(np.argmax(Y,axis=1),np.argmax(Y_pred,axis=1) )
+    cnf_matrix = confusion_matrix(Y, Y_pred )
     np.set_printoptions(precision=2)
 
     # Plot non-normalized confusion matrix
