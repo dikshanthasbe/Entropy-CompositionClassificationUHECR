@@ -66,8 +66,12 @@ X_test_norm = scalerX.transform(X_test_df)
 #Y_norm = scalerY.transform(Y_df)  
 #Y_test_norm = scalerY.transform(Y_test_df)  
 
+#Train Val split
 
-#TODO Train Val split
+X_train,X_val,Y_train,Y_val=train_test_split(X_norm,
+                                            Y_df.values,
+                                            test_size=0.20,
+                                            random_state=45)
 
 """ 
 KNN
@@ -75,18 +79,21 @@ KNN
 
 start_t_knn = time.time()
 
-n_neighbors = 5
+n_neighbors = 3
 clf = neighbors.KNeighborsClassifier(n_neighbors)
-clf.fit(X_norm, Y_df)
+clf.fit(X_train, Y_train)
 
 elapsed_t_knn = time.time() - start_t_knn
 
-Y_pred_train=clf.predict(X_norm)
+Y_pred_train=clf.predict(X_train)
 Y_pred_train=Y_pred_train.reshape(-1,1)
+Y_pred_val=clf.predict(X_val)
+Y_pred_val=Y_pred_val.reshape(-1,1)
 Y_pred_test=clf.predict(X_test_norm)
 Y_pred_test=Y_pred_test.reshape(-1,1)
 
-calc_error_n_plot(Y_df.values,Y_pred_train,'TRAIN')
+calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
+calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
 calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 
 
