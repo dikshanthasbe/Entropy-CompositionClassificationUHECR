@@ -130,3 +130,20 @@ calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
 calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 
 """
+Random Forest
+"""
+clf = RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1)
+clf.fit(X_train, np.ravel(Y_train))
+
+elapsed_t['RandForest'] = time.time() - start_t
+
+Y_pred_train=clf.predict(X_train)
+Y_pred_train=Y_pred_train.reshape(-1,1)
+Y_pred_val=clf.predict(X_val)
+Y_pred_val=Y_pred_val.reshape(-1,1)
+Y_pred_test=clf.predict(X_test_norm)
+Y_pred_test=Y_pred_test.reshape(-1,1)
+
+calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
+calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
+calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
