@@ -29,7 +29,11 @@ from keras.utils import plot_model
 from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
 
+# Classifiers used
 from sklearn import neighbors
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
@@ -40,6 +44,7 @@ from tools import calc_error_n_plot
 
 import time
 
+elapsed_t={}
 prefijo=''
 path_datos=('../data'+prefijo+'/')
 path_results=('../results'+prefijo+'/')
@@ -77,13 +82,13 @@ X_train,X_val,Y_train,Y_val=train_test_split(X_norm,
 KNN
 """
 
-start_t_knn = time.time()
+start_t = time.time()
 
 n_neighbors = 3
 clf = neighbors.KNeighborsClassifier(n_neighbors)
-clf.fit(X_train, Y_train)
+clf.fit(X_train, np.ravel(Y_train))
 
-elapsed_t_knn = time.time() - start_t_knn
+elapsed_t['knn'] = time.time() - start_t
 
 Y_pred_train=clf.predict(X_train)
 Y_pred_train=Y_pred_train.reshape(-1,1)
@@ -98,3 +103,30 @@ calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 
 
 print('Time elapsed for kNN %f', elapsed_t_knn)
+
+
+"""
+SVM
+"""
+
+start_t = time.time()
+
+C=0.75
+clf = SVC(C)
+
+clf.fit(X_train, np.ravel(Y_train))
+
+elapsed_t['SVM'] = time.time() - start_t
+
+Y_pred_train=clf.predict(X_train)
+Y_pred_train=Y_pred_train.reshape(-1,1)
+Y_pred_val=clf.predict(X_val)
+Y_pred_val=Y_pred_val.reshape(-1,1)
+Y_pred_test=clf.predict(X_test_norm)
+Y_pred_test=Y_pred_test.reshape(-1,1)
+
+calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
+calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
+calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+
+"""
