@@ -152,10 +152,25 @@ clasf_report['RandForest']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST'
 
 """
 XGBoost
+https://xgboost.ai/about
 """
 
+import xgboost as xgb
 
+#dtrain = xgb.DMatrix(np.concatenate((X_train,Y_train),axis=1))
+#dtest = xgb.DMatrix(np.concatenate((X_test_norm,Y_test_df.values),axis=1))
 
+dtrain = xgb.DMatrix(X_train, label=Y_train)
+dtest = xgb.DMatrix(X_test_norm,label=Y_test_df.values)
+
+# specify parameters via map
+param = {'max_depth':2, 'eta':1, 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
+num_round = 2
+bst = xgb.train(param, dtrain, num_round)
+# make prediction
+Y_pred_test = bst.predict(dtest)
+
+clasf_report['XGB']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 
 """
 DNN
