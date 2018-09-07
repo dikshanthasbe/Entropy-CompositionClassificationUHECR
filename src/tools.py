@@ -29,4 +29,4 @@ def calc_error_n_plot(Y,Y_pred,label):
                             title='Normalized confusion matrix '+label)
     
     plt.show()
-    return 0
+    return classification_report(Y, Y_pred)

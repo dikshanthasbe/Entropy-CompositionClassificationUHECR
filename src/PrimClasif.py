@@ -45,6 +45,7 @@ from tools import calc_error_n_plot
 import time
 
 elapsed_t={}
+conf_matrix={}
 prefijo=''
 path_datos=('../data'+prefijo+'/')
 path_results=('../results'+prefijo+'/')
@@ -53,11 +54,12 @@ random_st=42
 seed = 7 
 np.random.seed(seed)
 
-#X_df=pd.read_csv(path_datos+'XTrn.txt',usecols=['NALLParticlesTotal','MUTotal','ELTotal','Zenith','Energy'])
+#X_df=pd.read_csv(path_datos+'XTrn.txt',usecols=['NALLParticlesTiotal','MUTotal','ELTotal','Zenith','Energy'])
 X_df=pd.read_csv(path_datos+'XTrn.txt',sep='  ',header=None)
 Y_df=pd.read_csv(path_datos+'YTrn.txt',sep='  ',header=None)
 X_test_df=pd.read_csv(path_datos+'XTest.txt',sep='  ',header=None)
 Y_test_df=pd.read_csv(path_datos+'YTest.txt',sep='  ',header=None)
+
 
 scalerX = StandardScaler()  
 scalerX.fit(X_df)  
@@ -99,10 +101,10 @@ Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['KNN']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 
 
-print('Time elapsed for kNN %f', elapsed_t_knn)
+print('Time elapsed for kNN %f' % elapsed_t['knn'])
 
 
 """
@@ -127,7 +129,7 @@ Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['SVM']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 
 """
 Random Forest
@@ -146,4 +148,15 @@ Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['RandForest']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+
+"""
+XGBoost
+"""
+
+
+
+
+"""
+DNN
+"""
