@@ -45,7 +45,7 @@ from tools import calc_error_n_plot
 import time
 
 elapsed_t={}
-conf_matrix={}
+clasf_report={}
 prefijo=''
 path_datos=('../data'+prefijo+'/')
 path_results=('../results'+prefijo+'/')
