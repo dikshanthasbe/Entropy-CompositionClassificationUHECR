@@ -80,6 +80,17 @@ X_train,X_val,Y_train,Y_val=train_test_split(X_norm,
                                             test_size=0.20,
                                             random_state=45)
 
+"""
+BOOOORRAME!!!!!!
+"""
+X_train=X_train[0:500,:]
+Y_train=Y_train[0:500,:]
+
+"""
+-----------------------------
+"""
+
+
 """ 
 KNN
 """
@@ -164,7 +175,7 @@ dtrain = xgb.DMatrix(X_train, label=Y_train)
 dtest = xgb.DMatrix(X_test_norm,label=Y_test_df.values)
 
 # specify parameters via map
-param = {'max_depth':2, 'eta':1, 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
+param = {'max_depth':10, 'eta':1, 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
 num_round = 2
 bst = xgb.train(param, dtrain, num_round)
 # make prediction
@@ -175,3 +186,47 @@ clasf_report['XGB']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
 """
 DNN
 """
+import keras.utils
+
+def clasif_model():
+    individual=[(150, 0), (100, 0), (100,0), (50,0)]
+
+    activation_functions={
+        0:"relu",
+        1:"sigmoid",
+        2:"softmax",
+        3:"tanh",
+        #4:"selu", 
+        4:"softplus",
+        #6:"softsign",
+        5:"linear"
+    }
+
+    dimension=5
+    model = Sequential()
+    for units,activ_f in individual:       
+       if(units>5): 
+           model.add(Dense(units=units, input_dim=dimension, kernel_initializer=initializers.Constant(value=0.025), activation=activation_functions[activ_f]))
+    
+    model.add(Dense(units=5, activation="softmax", kernel_initializer=initializers.Constant(value=0.025)))   
+
+    #SGD(lr=0.05, momentum=0.1, decay=0.001, nesterov=False)
+    #model.compile(loss='mean_squared_error', optimizer='sgd')
+      
+    #Adam(lr=0.1, beta_1=0.09, beta_2=0.999, epsilon=1e-08, decay=0.0) #adam defaults Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
+    #Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0) # Adan defaults
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    
+    return model
+
+
+#Prepare one hot encoding...
+hot_Y_train = keras.utils.to_categorical(Y_train,num_classes=5)
+hot_Y_val = keras.utils.to_categorical(Y_val,num_classes=5)
+
+estimator = KerasRegressor(build_fn=clasif_model, nb_epoch=100, verbose=1)
+estimator.fit(X_train,hot_Y_train, epochs=150, batch_size=20, validation_data=(X_val,hot_Y_val))
+Y_pred_test = estimator.predict(X_test_norm)
+
+
+clasf_report['DNN']=calc_error_n_plot(Y_test_df.values,np.argmax(Y_pred_test,axis=1),'TEST')
