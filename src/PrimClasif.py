@@ -230,3 +230,13 @@ Y_pred_test = estimator.predict(X_test_norm)
 
 
 clasf_report['DNN']=calc_error_n_plot(Y_test_df.values,np.argmax(Y_pred_test,axis=1),'TEST')
+
+"""
+Generate report
+"""
+final_report=''
+final_report=' \t             precision    recall  f1-score   support \n'
+for model in clasf_report.keys():
+    report=clasf_report[model].split('\n')
+    final_report+=model+'\t'+report[5+3]+' \n'
+print(final_report)
