@@ -67,17 +67,19 @@ scalerX.fit(X_df)
 #scalerY = StandardScaler()  
 #scalerY.fit(Y_df) 
 
-X_norm = scalerX.transform(X_df)  
-X_test_norm = scalerX.transform(X_test_df)  
+X_train = scalerX.transform(X_df)  
+Y_train = Y_df.values
+
+X_testYval_norm = scalerX.transform(X_test_df)  
 
 #Y_norm = scalerY.transform(Y_df)  
 #Y_test_norm = scalerY.transform(Y_test_df)  
 
-#Train Val split
+#Test Val split
 
-X_train,X_val,Y_train,Y_val=train_test_split(X_norm,
-                                            Y_df.values,
-                                            test_size=0.20,
+X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
+                                            Y_test_df.values,
+                                            test_size=0.50,
                                             random_state=45)
 
 """
@@ -112,7 +114,7 @@ Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-clasf_report['KNN']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['KNN']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
 
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
@@ -140,7 +142,7 @@ Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-clasf_report['SVM']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['SVM']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
 """
 Random Forest
@@ -159,7 +161,7 @@ Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-clasf_report['RandForest']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['RandForest']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
 """
 XGBoost
@@ -172,7 +174,7 @@ import xgboost as xgb
 #dtest = xgb.DMatrix(np.concatenate((X_test_norm,Y_test_df.values),axis=1))
 
 dtrain = xgb.DMatrix(X_train, label=Y_train)
-dtest = xgb.DMatrix(X_test_norm,label=Y_test_df.values)
+dtest = xgb.DMatrix(X_test_norm,label=Y_test)
 
 # specify parameters via map
 param = {'max_depth':10, 'eta':1, 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
@@ -181,7 +183,7 @@ bst = xgb.train(param, dtrain, num_round)
 # make prediction
 Y_pred_test = bst.predict(dtest)
 
-clasf_report['XGB']=calc_error_n_plot(Y_test_df.values,Y_pred_test,'TEST')
+clasf_report['XGB']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
 """
 DNN
@@ -229,7 +231,7 @@ estimator.fit(X_train,hot_Y_train, epochs=150, batch_size=20, validation_data=(X
 Y_pred_test = estimator.predict(X_test_norm)
 
 
-clasf_report['DNN']=calc_error_n_plot(Y_test_df.values,np.argmax(Y_pred_test,axis=1),'TEST')
+clasf_report['DNN']=calc_error_n_plot(Y_test_norm,np.argmax(Y_pred_test,axis=1),'TEST')
 
 """
 Generate report
