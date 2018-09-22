@@ -88,7 +88,7 @@ X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
 #X_train=X_train[0:500,:]
 #Y_train=Y_train[0:500,:]
 
-n_folds=3
+n_folds=4
 
 """ 
 KNN
@@ -96,8 +96,8 @@ KNN
 
 start_t = time.time()
 
-#n_neighbors_list = list(range(1,20,1))
-n_neighbors_list = list(range(1,4,1))
+n_neighbors_list = list(range(1,30,1))
+#n_neighbors_list = list(range(1,4,1))
 
 elapsed_t['knn'] = time.time() - start_t
 
@@ -130,8 +130,8 @@ for n_neighbors in n_neighbors_list:
     perf_mean_record[n_neighbors]=np.mean(list(perf_record[n_neighbors].values()))
     perf_mean_record_std[n_neighbors]=np.std(list(perf_record[n_neighbors].values()))
 
-best_index=list(perf_mean_record.keys())[np.argmin(list(perf_mean_record.values()))]
-print('KNN - Best accuracy %f (std= %f ) for n_neigbout %d' % (np.min(list(perf_mean_record.values())),perf_mean_record_std[best_index],best_index))
+best_index=list(perf_mean_record.keys())[np.argmax(list(perf_mean_record.values()))]
+print('KNN - Best accuracy %f (std= %f ) for n_neigbout %d' % (np.max(list(perf_mean_record.values())),perf_mean_record_std[best_index],best_index))
 
 
 
