@@ -88,7 +88,7 @@ X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
 #X_train=X_train[0:500,:]
 #Y_train=Y_train[0:500,:]
 
-n_folds=4
+n_folds=3
 
 """ 
 KNN
@@ -96,21 +96,26 @@ KNN
 
 start_t = time.time()
 
-n_neighbors_list = list(range(1,30,1))
-#n_neighbors_list = list(range(1,4,1))
+#n_neighbors_list = list(range(1,30,1))
+n_neighbors_list = list(range(1,4,1))
 
 elapsed_t['knn'] = time.time() - start_t
 
 perf_record = {}
+perf_record_test = {}
 perf_mean_record = {}
 perf_mean_record_std = {}
 k_fold = StratifiedKFold(n_splits=n_folds)
-fold=-1
+
 for n_neighbors in n_neighbors_list:
+    fold=-1
     for train_indices, test_indices in k_fold.split(X_train, Y_train):
         fold+=1
         
-        if n_neighbors not in perf_record: perf_record[n_neighbors] = {}
+        print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds))
+
+        if n_neighbors not in perf_record: perf_record[n_neighbors] = np.zeros(n_folds)
+        if n_neighbors not in perf_record_test: perf_record_test[n_neighbors] = np.zeros(n_folds)
         
         X_train_CV, X_test_CV = X_train[train_indices], X_train[test_indices] 
         Y_train_CV, Y_test_CV = Y_train[train_indices], Y_train[test_indices]
@@ -121,29 +126,31 @@ for n_neighbors in n_neighbors_list:
         Y_pred_train_CV=knn_clf.predict(X_train_CV).reshape(-1,1)
         #Y_pred_train_CV=Y_pred_train.reshape(-1,1)
         Y_pred_test_CV=knn_clf.predict(X_test_CV).reshape(-1,1)
-        if fold not in perf_record[n_neighbors]: perf_record[n_neighbors][fold] = {}
+        Y_pred_test=knn_clf.predict(X_test_norm).reshape(-1,1)
+        
         #perf_record[fold][n_neighbors] = precision_recall_fscore_support(Y_test_CV,Y_pred_test_CV)
         perf_record[n_neighbors][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
+        perf_record_test[n_neighbors][fold] = accuracy_score(Y_test,Y_pred_test)
     
-    if n_neighbors not in perf_mean_record: perf_mean_record[n_neighbors] = {}
-    if n_neighbors not in perf_mean_record_std: perf_mean_record_std[n_neighbors] = {}
-    perf_mean_record[n_neighbors]=np.mean(list(perf_record[n_neighbors].values()))
-    perf_mean_record_std[n_neighbors]=np.std(list(perf_record[n_neighbors].values()))
-
-best_index=list(perf_mean_record.keys())[np.argmax(list(perf_mean_record.values()))]
-print('KNN - Best accuracy %f (std= %f ) for n_neigbout %d' % (np.max(list(perf_mean_record.values())),perf_mean_record_std[best_index],best_index))
-
-
-
-
-
+    if n_neighbors not in perf_mean_record: perf_mean_record[n_neighbors] = np.mean(perf_record[n_neighbors])
+    if n_neighbors not in perf_mean_record_std: perf_mean_record_std[n_neighbors] = np.std(perf_record[n_neighbors])
+    
 
 #calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
-clasf_report_val['KNN']=calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-clasf_report['KNN']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
+#clasf_report_val['KNN']=calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
+#clasf_report['KNN']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
+best_index=list(perf_mean_record.keys())[np.argmax(list(perf_mean_record.values()))]
 
+print('KNN - Best train accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(perf_mean_record.values())),perf_mean_record_std[best_index],best_index))
+print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (perf_record_test[best_index],np.mean(perf_record_test[best_index]),np.std(perf_record_test[best_index])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
+
+
+
+
+
+
 
 
 """
