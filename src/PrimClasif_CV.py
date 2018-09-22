@@ -116,7 +116,7 @@ for n_neighbors in n_neighbors_list:
         Y_train_CV, Y_test_CV = Y_train[train_indices], Y_train[test_indices]
 
     
-        knn_clf = neighbors.KNeighborsClassifier(n_neighbors)
+        knn_clf = neighbors.KNeighborsClassifier(n_neighbors,metric='euclidean')
         knn_clf.fit(X_train_CV, np.ravel(Y_train_CV))
         Y_pred_train_CV=knn_clf.predict(X_train_CV).reshape(-1,1)
         #Y_pred_train_CV=Y_pred_train.reshape(-1,1)
