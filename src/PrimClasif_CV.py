@@ -156,22 +156,46 @@ print('Time elapsed for kNN %f' % elapsed_t['knn'])
 """
 SVM
 """
+SVM_perf_record = {}
+SVM_perf_record_test = {}
+SVM_perf_mean_record = {}
+SVM_perf_mean_record_std = {}
 
 start_t = time.time()
 
-C=0.75
-clf = SVC(C)
+exp_C=np.arange(-5,11,2)
+exp_gammas=np.arange(-15,0,2)
 
-clf.fit(X_train, np.ravel(Y_train))
+C=np.exp2(exp_C)
+gammas=np.exp2(exp_gammas)
 
-elapsed_t['SVM'] = time.time() - start_t
+config_list=[]
+for i in C:
+    for j in gammas:
+        config_list.append([i,j])
 
-Y_pred_train=clf.predict(X_train)
-Y_pred_train=Y_pred_train.reshape(-1,1)
-Y_pred_val=clf.predict(X_val)
-Y_pred_val=Y_pred_val.reshape(-1,1)
-Y_pred_test=clf.predict(X_test_norm)
-Y_pred_test=Y_pred_test.reshape(-1,1)
+for config in config_list:
+    fold=-1
+    for train_indices, test_indices in k_fold.split(X_train, Y_train):
+        fold+=1
+        
+        print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds))
+
+        if n_neighbors not in perf_record: perf_record[n_neighbors] = np.zeros(n_folds)
+        if n_neighbors not in perf_record_test: perf_record_test[n_neighbors] = np.zeros(n_folds)
+
+        clf = SVC(C=config[0]
+
+        clf.fit(X_train, np.ravel(Y_train))
+
+        elapsed_t['SVM'] = time.time() - start_t
+
+        Y_pred_train=clf.predict(X_train)
+        Y_pred_train=Y_pred_train.reshape(-1,1)
+        Y_pred_val=clf.predict(X_val)
+        Y_pred_val=Y_pred_val.reshape(-1,1)
+        Y_pred_test=clf.predict(X_test_norm)
+        Y_pred_test=Y_pred_test.reshape(-1,1)
 
 calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
