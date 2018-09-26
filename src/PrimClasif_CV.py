@@ -99,8 +99,6 @@ start_t = time.time()
 #n_neighbors_list = list(range(1,30,1))
 n_neighbors_list = list(range(1,4,1))
 
-elapsed_t['knn'] = time.time() - start_t
-
 perf_record = {}
 perf_record_test = {}
 perf_mean_record = {}
@@ -139,6 +137,9 @@ for n_neighbors in n_neighbors_list:
 #calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 #clasf_report_val['KNN']=calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
 #clasf_report['KNN']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
+
+elapsed_t['knn'] = time.time() - start_t
+
 
 best_index=list(perf_mean_record.keys())[np.argmax(list(perf_mean_record.values()))]
 
@@ -184,7 +185,7 @@ for config in config_list:
         if n_neighbors not in perf_record: perf_record[n_neighbors] = np.zeros(n_folds)
         if n_neighbors not in perf_record_test: perf_record_test[n_neighbors] = np.zeros(n_folds)
 
-        clf = SVC(C=config[0]
+        clf = SVC(C=config[0],gamma=config[1])
 
         clf.fit(X_train, np.ravel(Y_train))
 
