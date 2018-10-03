@@ -326,9 +326,8 @@ DNN
 """
 import keras.utils
 
-def clasif_model():
-    individual=[(150, 0), (100, 0), (100,0), (50,0)]
-
+def clasif_model(individual):
+    
     activation_functions={
         0:"relu",
         1:"sigmoid",
@@ -358,16 +357,81 @@ def clasif_model():
     return model
 
 
-#Prepare one hot encoding...
-hot_Y_train = keras.utils.to_categorical(Y_train,num_classes=5)
-hot_Y_val = keras.utils.to_categorical(Y_val,num_classes=5)
+DNN_perf_record_train_CV = {}
+DNN_perf_record_test_CV = {}
+DNN_perf_record_test = {}
+DNN_perf_mean_record_test_CV = {}
+DNN_perf_mean_record_test_CV_std = {}
+DNN_perf_mean_record_train_CV = {}
+DNN_perf_mean_record_train_CV_std = {}
 
-estimator = KerasRegressor(build_fn=clasif_model, nb_epoch=100, verbose=1)
-estimator.fit(X_train,hot_Y_train, epochs=150, batch_size=20, validation_data=(X_val,hot_Y_val))
-Y_pred_test = estimator.predict(X_test_norm)
+start_t = time.time()
+
+max_individuals=100
+max_depth=50
+individuals={}
+for i in range(1,max_individuals):
+    individuals[i]=np.ceil(np.random.rand(1,int(np.round(np.random.rand(1)*max_depth)+1))*100)
+
+batch_size_list=np.arange(2,1024,200)
+
+config_list=[]
+for i in individuals.values():
+    for j in batch_size_list:
+        config_list.append([i,j])
 
 
-clasf_report['DNN']=calc_error_n_plot(Y_test,np.argmax(Y_pred_test,axis=1),'TEST')
+config_idx=-1
+for config in config_list:
+    config_idx+=1
+    fold=-1
+    for train_indices, test_indices in k_fold.split(X_train, Y_train):
+        fold+=1
+        
+        print('VAMOS por config %s , %.3f y por la fold %d / %d' % (config[0],config[1],fold,n_folds))
+
+        if config_idx not in DNN_perf_record_train_CV: DNN_perf_record_train_CV[config_idx] = np.zeros(n_folds)
+        if config_idx not in DNN_perf_record_test_CV: DNN_perf_record_test_CV[config_idx] = np.zeros(n_folds)
+        if config_idx not in DNN_perf_record_test: DNN_perf_record_test[config_idx] = np.zeros(n_folds)
+
+        X_train_CV, X_test_CV = X_train[train_indices], X_train[test_indices] 
+        Y_train_CV, Y_test_CV = Y_train[train_indices], Y_train[test_indices]
+
+        #Prepare one hot encoding...
+        hot_Y_train_CV = keras.utils.to_categorical(Y_train_CV,num_classes=5)
+        #hot_Y_val = keras.utils.to_categorical(Y_val,num_classes=5)
+        hot_Y_test_CV = keras.utils.to_categorical(Y_test_CV,num_classes=5)
+
+        DNN = KerasRegressor(build_fn=clasif_model, individual=config[0], verbose=0)
+        DNN.fit(X_train_CV,hot_Y_train_CV, epochs=300, batch_size=config[1])#, validation_data=(X_val,hot_Y_val))
+                
+        Y_pred_train_CV=DNN.predict(X_train_CV)
+        Y_pred_test_CV=DNN.predict(X_test_CV)
+        Y_pred_test=DNN.predict(X_test_CV)
+        
+
+        DNN_perf_record_train_CV[config_idx][fold] = accuracy_score(Y_train_CV,Y_pred_train_CV)
+        DNN_perf_record_test_CV[config_idx][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
+        DNN_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
+    
+    if config_idx not in DNN_perf_mean_record_train_CV: DNN_perf_mean_record_train_CV[config_idx] = np.mean(DNN_perf_record_train_CV[config_idx])
+    if config_idx not in DNN_perf_mean_record_train_CV_std: DNN_perf_mean_record_train_CV_std[config_idx] = np.std(DNN_perf_record_train_CV[config_idx])
+    if config_idx not in DNN_perf_mean_record_test_CV: DNN_perf_mean_record_test_CV[config_idx] = np.mean(DNN_perf_record_test_CV[config_idx])
+    if config_idx not in DNN_perf_mean_record_test_CV_std: DNN_perf_mean_record_test_CV_std[config_idx] = np.std(DNN_perf_record_test_CV[config_idx])    
+    
+
+
+elapsed_t['DNN'] = time.time() - start_t
+
+
+
+best_index=list(DNN_perf_mean_record_test_CV.keys())[np.argmax(list(DNN_perf_mean_record_test_CV.values()))]
+
+print('DNN - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(DNN_perf_mean_record_train_CV.values())),DNN_perf_mean_record_train_CV_std[best_index],config_list[best_index]))
+print('DNN - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(DNN_perf_mean_record_test_CV.values())),DNN_perf_mean_record_test_CV_std[best_index],config_list[best_index]))
+print('DNN - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (DNN_perf_record_test[best_index],np.mean(DNN_perf_record_test[best_index]),np.std(DNN_perf_record_test[best_index])))
+print('Time elapsed for DNN %f' % elapsed_t['DNN'])
+
 
 """
 Generate report
