@@ -85,8 +85,8 @@ X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
                                             random_state=45)
 
 
-#X_train=X_train[0:500,:]
-#Y_train=Y_train[0:500,:]
+X_train=X_train[0:50,:]
+Y_train=Y_train[0:50,:]
 
 n_folds=3
 
@@ -99,10 +99,14 @@ start_t = time.time()
 #n_neighbors_list = list(range(1,30,1))
 n_neighbors_list = list(range(1,4,1))
 
-perf_record = {}
-perf_record_test = {}
-perf_mean_record = {}
-perf_mean_record_std = {}
+
+KNN_perf_record_test_CV = {}
+KNN_perf_record_train_CV = {}
+KNN_perf_record_test = {}
+KNN_perf_mean_record_train_CV = {}
+KNN_perf_mean_record_train_CV_std = {}
+KNN_perf_mean_record_test_CV = {}
+KNN_perf_mean_record_test_CV_std = {}
 k_fold = StratifiedKFold(n_splits=n_folds)
 
 for n_neighbors in n_neighbors_list:
@@ -112,8 +116,9 @@ for n_neighbors in n_neighbors_list:
         
         print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds))
 
-        if n_neighbors not in perf_record: perf_record[n_neighbors] = np.zeros(n_folds)
-        if n_neighbors not in perf_record_test: perf_record_test[n_neighbors] = np.zeros(n_folds)
+        if n_neighbors not in KNN_perf_record_train_CV: KNN_perf_record_train_CV[n_neighbors] = np.zeros(n_folds)
+        if n_neighbors not in KNN_perf_record_test_CV: KNN_perf_record_test_CV[n_neighbors] = np.zeros(n_folds)
+        if n_neighbors not in KNN_perf_record_test: KNN_perf_record_test[n_neighbors] = np.zeros(n_folds)
         
         X_train_CV, X_test_CV = X_train[train_indices], X_train[test_indices] 
         Y_train_CV, Y_test_CV = Y_train[train_indices], Y_train[test_indices]
@@ -127,11 +132,14 @@ for n_neighbors in n_neighbors_list:
         Y_pred_test=knn_clf.predict(X_test_norm).reshape(-1,1)
         
         #perf_record[fold][n_neighbors] = precision_recall_fscore_support(Y_test_CV,Y_pred_test_CV)
-        perf_record[n_neighbors][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
-        perf_record_test[n_neighbors][fold] = accuracy_score(Y_test,Y_pred_test)
+        KNN_perf_record_train_CV[n_neighbors][fold] = accuracy_score(Y_train_CV,Y_pred_train_CV)
+        KNN_perf_record_test_CV[n_neighbors][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
+        KNN_perf_record_test[n_neighbors][fold] = accuracy_score(Y_test,Y_pred_test)
     
-    if n_neighbors not in perf_mean_record: perf_mean_record[n_neighbors] = np.mean(perf_record[n_neighbors])
-    if n_neighbors not in perf_mean_record_std: perf_mean_record_std[n_neighbors] = np.std(perf_record[n_neighbors])
+    if n_neighbors not in KNN_perf_mean_record_train_CV: KNN_perf_mean_record_train_CV[n_neighbors] = np.mean(KNN_perf_record_train_CV[n_neighbors])
+    if n_neighbors not in KNN_perf_mean_record_train_CV_std: KNN_perf_mean_record_train_CV_std[n_neighbors] = np.std(KNN_perf_record_train_CV[n_neighbors])
+    if n_neighbors not in KNN_perf_mean_record_test_CV: KNN_perf_mean_record_test_CV[n_neighbors] = np.mean(KNN_perf_record_test_CV[n_neighbors])
+    if n_neighbors not in KNN_perf_mean_record_test_CV_std: KNN_perf_mean_record_test_CV_std[n_neighbors] = np.std(KNN_perf_record_test_CV[n_neighbors])
     
 
 #calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
@@ -141,26 +149,23 @@ for n_neighbors in n_neighbors_list:
 elapsed_t['knn'] = time.time() - start_t
 
 
-best_index=list(perf_mean_record.keys())[np.argmax(list(perf_mean_record.values()))]
+best_index=list(KNN_perf_mean_record_test_CV.keys())[np.argmax(list(KNN_perf_mean_record_test_CV.values()))]
 
-print('KNN - Best train accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(perf_mean_record.values())),perf_mean_record_std[best_index],best_index))
-print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (perf_record_test[best_index],np.mean(perf_record_test[best_index]),np.std(perf_record_test[best_index])))
+print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_index],best_index))
+print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_index],best_index))
+print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_index],np.mean(KNN_perf_record_test[best_index]),np.std(KNN_perf_record_test[best_index])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
-
-
-
-
-
-
-
 
 """
 SVM
 """
-SVM_perf_record = {}
+SVM_perf_record_train_CV = {}
+SVM_perf_record_test_CV = {}
 SVM_perf_record_test = {}
-SVM_perf_mean_record = {}
-SVM_perf_mean_record_std = {}
+SVM_perf_mean_record_test_CV = {}
+SVM_perf_mean_record_test_CV_std = {}
+SVM_perf_mean_record_train_CV = {}
+SVM_perf_mean_record_train_CV_std = {}
 
 start_t = time.time()
 
@@ -175,51 +180,58 @@ for i in C:
     for j in gammas:
         config_list.append([i,j])
 
+config_idx=-1
 for config in config_list:
+    config_idx+=1
     fold=-1
     for train_indices, test_indices in k_fold.split(X_train, Y_train):
         fold+=1
         
-        print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds))
+        print('VAMOS por config %d , %.3f y por la fold %d / %d' % (config[0],config[1],fold,n_folds))
 
-        if n_neighbors not in perf_record: perf_record[n_neighbors] = np.zeros(n_folds)
-        if n_neighbors not in perf_record_test: perf_record_test[n_neighbors] = np.zeros(n_folds)
+        if config_idx not in SVM_perf_record_train_CV: SVM_perf_record_train_CV[config_idx] = np.zeros(n_folds)
+        if config_idx not in SVM_perf_record_test_CV: SVM_perf_record_test_CV[config_idx] = np.zeros(n_folds)
+        if config_idx not in SVM_perf_record_test: SVM_perf_record_test[config_idx] = np.zeros(n_folds)
+
+        X_train_CV, X_test_CV = X_train[train_indices], X_train[test_indices] 
+        Y_train_CV, Y_test_CV = Y_train[train_indices], Y_train[test_indices]
+
 
         clf = SVC(C=config[0],gamma=config[1])
 
-        clf.fit(X_train, np.ravel(Y_train))
+        clf.fit(X_train_CV, np.ravel(Y_train_CV))
 
-        elapsed_t['SVM'] = time.time() - start_t
+        Y_pred_train_CV=clf.predict(X_train_CV).reshape(-1,1)
+        Y_pred_test_CV=clf.predict(X_test_CV).reshape(-1,1)
+        Y_pred_test=clf.predict(X_test_norm).reshape(-1,1)
+        
 
-        Y_pred_train=clf.predict(X_train)
-        Y_pred_train=Y_pred_train.reshape(-1,1)
-        Y_pred_val=clf.predict(X_val)
-        Y_pred_val=Y_pred_val.reshape(-1,1)
-        Y_pred_test=clf.predict(X_test_norm)
-        Y_pred_test=Y_pred_test.reshape(-1,1)
+        SVM_perf_record_train_CV[config_idx][fold] = accuracy_score(Y_train_CV,Y_pred_train_CV)
+        SVM_perf_record_test_CV[config_idx][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
+        SVM_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
+    
+    if config_idx not in SVM_perf_mean_record_train_CV: SVM_perf_mean_record_train_CV[config_idx] = np.mean(SVM_perf_record_train_CV[config_idx])
+    if config_idx not in SVM_perf_mean_record_train_CV_std: SVM_perf_mean_record_train_CV_std[config_idx] = np.std(SVM_perf_record_train_CV[config_idx])
+    if config_idx not in SVM_perf_mean_record_test_CV: SVM_perf_mean_record_test_CV[config_idx] = np.mean(SVM_perf_record_test_CV[config_idx])
+    if config_idx not in SVM_perf_mean_record_test_CV_std: SVM_perf_mean_record_test_CV_std[config_idx] = np.std(SVM_perf_record_test_CV[config_idx])    
+    
 
-calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
-calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-clasf_report['SVM']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
-"""
-Random Forest
-"""
-clf = RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1)
-clf.fit(X_train, np.ravel(Y_train))
+elapsed_t['SVM'] = time.time() - start_t
 
-elapsed_t['RandForest'] = time.time() - start_t
+#calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
+#calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
+#clasf_report['SVM']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
 
-Y_pred_train=clf.predict(X_train)
-Y_pred_train=Y_pred_train.reshape(-1,1)
-Y_pred_val=clf.predict(X_val)
-Y_pred_val=Y_pred_val.reshape(-1,1)
-Y_pred_test=clf.predict(X_test_norm)
-Y_pred_test=Y_pred_test.reshape(-1,1)
 
-calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
-calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
-clasf_report['RandForest']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
+best_index=list(SVM_perf_mean_record_test_CV.keys())[np.argmax(list(SVM_perf_mean_record_test_CV.values()))]
+
+print('SVM - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(SVM_perf_mean_record_train_CV.values())),SVM_perf_mean_record_train_CV_std[best_index],config_list[best_index]))
+print('SVM - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(SVM_perf_mean_record_test_CV.values())),SVM_perf_mean_record_test_CV_std[best_index],config_list[best_index]))
+print('SVM - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (SVM_perf_record_test[best_index],np.mean(SVM_perf_record_test[best_index]),np.std(SVM_perf_record_test[best_index])))
+print('Time elapsed for SVM %f' % elapsed_t['SVM'])
+
+
 
 """
 XGBoost
@@ -228,20 +240,86 @@ https://xgboost.ai/about
 
 import xgboost as xgb
 
+XGB_perf_record_train_CV = {}
+XGB_perf_record_test_CV = {}
+XGB_perf_record_test = {}
+XGB_perf_mean_record_test_CV = {}
+XGB_perf_mean_record_test_CV_std = {}
+XGB_perf_mean_record_train_CV = {}
+XGB_perf_mean_record_train_CV_std = {}
+
+start_t = time.time()
+
+max_depth_list=np.arange(3,6,1)
+eta_list=np.arange(0.05,1,0.05)
+
+config_list=[]
+for i in max_depth_list:
+    for j in eta_list:
+        config_list.append([i,j])
+
 #dtrain = xgb.DMatrix(np.concatenate((X_train,Y_train),axis=1))
 #dtest = xgb.DMatrix(np.concatenate((X_test_norm,Y_test_df.values),axis=1))
 
-dtrain = xgb.DMatrix(X_train, label=Y_train)
-dtest = xgb.DMatrix(X_test_norm,label=Y_test)
+#dtrain = xgb.DMatrix(X_train, label=Y_train)
+#dtest = xgb.DMatrix(X_test_norm,label=Y_test)
 
-# specify parameters via map
-param = {'max_depth':10, 'eta':1, 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
-num_round = 2
-bst = xgb.train(param, dtrain, num_round)
-# make prediction
-Y_pred_test = bst.predict(dtest)
 
-clasf_report['XGB']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
+config_idx=-1
+for config in config_list:
+    config_idx+=1
+    fold=-1
+    for train_indices, test_indices in k_fold.split(X_train, Y_train):
+        fold+=1
+        
+        print('VAMOS por config %d , %.3f y por la fold %d / %d' % (config[0],config[1],fold,n_folds))
+
+        if config_idx not in XGB_perf_record_train_CV: XGB_perf_record_train_CV[config_idx] = np.zeros(n_folds)
+        if config_idx not in XGB_perf_record_test_CV: XGB_perf_record_test_CV[config_idx] = np.zeros(n_folds)
+        if config_idx not in XGB_perf_record_test: XGB_perf_record_test[config_idx] = np.zeros(n_folds)
+
+        X_train_CV, X_test_CV = X_train[train_indices], X_train[test_indices] 
+        Y_train_CV, Y_test_CV = Y_train[train_indices], Y_train[test_indices]
+
+        dtrain_CV = xgb.DMatrix(X_train_CV, label=Y_train_CV)
+        dtest_CV = xgb.DMatrix(X_test_CV,label=Y_test_CV)
+        dtest = xgb.DMatrix(X_test_norm,label=Y_test)
+
+        # specify parameters via map
+        param = {'max_depth':config[0], 'eta':config[1], 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
+        num_round = 2
+        bst = xgb.train(param, dtrain_CV, num_round)
+        # make prediction
+        #Y_pred_test = bst.predict(dtest)
+        
+        Y_pred_train_CV=bst.predict(dtrain_CV)
+        Y_pred_test_CV=bst.predict(dtest_CV)
+        Y_pred_test=bst.predict(dtest)
+        
+
+        XGB_perf_record_train_CV[config_idx][fold] = accuracy_score(Y_train_CV,Y_pred_train_CV)
+        XGB_perf_record_test_CV[config_idx][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
+        XGB_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
+    
+    if config_idx not in XGB_perf_mean_record_train_CV: XGB_perf_mean_record_train_CV[config_idx] = np.mean(XGB_perf_record_train_CV[config_idx])
+    if config_idx not in XGB_perf_mean_record_train_CV_std: XGB_perf_mean_record_train_CV_std[config_idx] = np.std(XGB_perf_record_train_CV[config_idx])
+    if config_idx not in XGB_perf_mean_record_test_CV: XGB_perf_mean_record_test_CV[config_idx] = np.mean(XGB_perf_record_test_CV[config_idx])
+    if config_idx not in XGB_perf_mean_record_test_CV_std: XGB_perf_mean_record_test_CV_std[config_idx] = np.std(XGB_perf_record_test_CV[config_idx])    
+    
+
+
+elapsed_t['XGB'] = time.time() - start_t
+
+
+
+best_index=list(XGB_perf_mean_record_test_CV.keys())[np.argmax(list(XGB_perf_mean_record_test_CV.values()))]
+
+print('XGB - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_train_CV.values())),XGB_perf_mean_record_train_CV_std[best_index],config_list[best_index]))
+print('XGB - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_test_CV.values())),XGB_perf_mean_record_test_CV_std[best_index],config_list[best_index]))
+print('XGB - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (XGB_perf_record_test[best_index],np.mean(XGB_perf_record_test[best_index]),np.std(XGB_perf_record_test[best_index])))
+print('Time elapsed for XGB %f' % elapsed_t['XGB'])
+
+
 
 """
 DNN
