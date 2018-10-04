@@ -97,7 +97,7 @@ KNN
 start_t = time.time()
 
 #n_neighbors_list = list(range(1,30,1))
-n_neighbors_list = list(range(1,4,1))
+n_neighbors_list = list(range(1,10  ,1))
 
 
 KNN_perf_record_test_CV = {}
@@ -333,10 +333,10 @@ def clasif_model(individual):
         1:"sigmoid",
         2:"softmax",
         3:"tanh",
-        #4:"selu", 
-        4:"softplus",
-        #6:"softsign",
-        5:"linear"
+        4:"selu", 
+        5:"softplus",
+        6:"softsign",
+        7:"linear"
     }
 
     dimension=5
@@ -368,17 +368,22 @@ DNN_perf_mean_record_train_CV_std = {}
 start_t = time.time()
 
 max_individuals=100
-max_depth=50
+max_depth=10
 individuals={}
-for i in range(1,max_individuals):
-    individuals[i]=np.ceil(np.random.rand(1,int(np.round(np.random.rand(1)*max_depth)+1))*100)
+for i in range(0,max_individuals):
+    individuals[i]=[]
+    layers=int(np.round(np.random.rand(1)*max_depth)+1)
+    units=np.ceil(np.random.rand(1,layers)*100)[0]
+    act_func=np.ceil(np.random.rand(1,layers)*7)[0]
+    for j in range(0,layers):
+        individuals[i].append((units[j],act_func[j]))
 
-batch_size_list=np.arange(2,1024,200)
+batch_size_list=np.arange(100,100,100)
 
 config_list=[]
-for i in individuals.values():
+for i in range(0,max_individuals):
     for j in batch_size_list:
-        config_list.append([i,j])
+        config_list.append([individuals[i],j])
 
 
 config_idx=-1
@@ -403,7 +408,10 @@ for config in config_list:
         hot_Y_test_CV = keras.utils.to_categorical(Y_test_CV,num_classes=5)
 
         DNN = KerasRegressor(build_fn=clasif_model, individual=config[0], verbose=0)
-        DNN.fit(X_train_CV,hot_Y_train_CV, epochs=300, batch_size=config[1])#, validation_data=(X_val,hot_Y_val))
+        early_stopping=callbacks.EarlyStopping(monitor='loss', min_delta=1e-03, patience=20, verbose=1, mode='min')
+        reduce_lr = callbacks.ReduceLROnPlateau(monitor='loss', factor=0.1,patience=10, min_lr=0.001, epsilon=1e-03, verbose=1)
+        callback_list=[early_stopping, reduce_lr]
+        DNN.fit(X_train_CV,hot_Y_train_CV, epochs=300, batch_size=config[1],callbacks=callback_list)#, validation_data=(X_val,hot_Y_val))
                 
         Y_pred_train_CV=DNN.predict(X_train_CV)
         Y_pred_test_CV=DNN.predict(X_test_CV)
