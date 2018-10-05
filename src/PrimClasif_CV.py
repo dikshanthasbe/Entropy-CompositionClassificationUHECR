@@ -84,9 +84,9 @@ X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
                                             test_size=0.50,
                                             random_state=45)
 
+X_train=X_train[0:500]
+Y_train=Y_train[0:500]
 
-X_train=X_train[0:50,:]
-Y_train=Y_train[0:50,:]
 
 n_folds=3
 
@@ -378,7 +378,7 @@ for i in range(0,max_individuals):
     for j in range(0,layers):
         individuals[i].append((units[j],act_func[j]))
 
-batch_size_list=np.arange(100,100,100)
+batch_size_list=np.array([128,256,512,1024])
 
 config_list=[]
 for i in range(0,max_individuals):
@@ -406,10 +406,11 @@ for config in config_list:
         hot_Y_train_CV = keras.utils.to_categorical(Y_train_CV,num_classes=5)
         #hot_Y_val = keras.utils.to_categorical(Y_val,num_classes=5)
         hot_Y_test_CV = keras.utils.to_categorical(Y_test_CV,num_classes=5)
+        hot_Y_test = keras.utils.to_categorical(Y_test,num_classes=5)
 
         DNN = KerasRegressor(build_fn=clasif_model, individual=config[0], verbose=0)
         early_stopping=callbacks.EarlyStopping(monitor='loss', min_delta=1e-03, patience=20, verbose=1, mode='min')
-        reduce_lr = callbacks.ReduceLROnPlateau(monitor='loss', factor=0.1,patience=10, min_lr=0.001, epsilon=1e-03, verbose=1)
+        reduce_lr = callbacks.ReduceLROnPlateau(monitor='loss', factor=0.1,patience=10, min_lr=0.001, min_delta=1e-03, verbose=1)
         callback_list=[early_stopping, reduce_lr]
         DNN.fit(X_train_CV,hot_Y_train_CV, epochs=300, batch_size=config[1],callbacks=callback_list)#, validation_data=(X_val,hot_Y_val))
                 
@@ -418,9 +419,9 @@ for config in config_list:
         Y_pred_test=DNN.predict(X_test_CV)
         
 
-        DNN_perf_record_train_CV[config_idx][fold] = accuracy_score(Y_train_CV,Y_pred_train_CV)
-        DNN_perf_record_test_CV[config_idx][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
-        DNN_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
+        DNN_perf_record_train_CV[config_idx][fold] = accuracy_score(hot_Y_train_CV,Y_pred_train_CV)
+        DNN_perf_record_test_CV[config_idx][fold] = accuracy_score(hot_Y_test_CV,Y_pred_test_CV)
+        DNN_perf_record_test[config_idx][fold] = accuracy_score(hot_Y_test,Y_pred_test)
     
     if config_idx not in DNN_perf_mean_record_train_CV: DNN_perf_mean_record_train_CV[config_idx] = np.mean(DNN_perf_record_train_CV[config_idx])
     if config_idx not in DNN_perf_mean_record_train_CV_std: DNN_perf_mean_record_train_CV_std[config_idx] = np.std(DNN_perf_record_train_CV[config_idx])
