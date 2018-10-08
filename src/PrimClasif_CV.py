@@ -85,14 +85,14 @@ X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
                                             test_size=0.50,
                                             random_state=45)
 
-X_train=X_train[0:500]
-Y_train=Y_train[0:500]
+#X_train=X_train[0:500]
+#Y_train=Y_train[0:500]
 
 n_folds=3
 
-""""""""""""""""""""""""""""""""""""""""""""" 
-KNN
-"""""""""""""""""""""""""""""""""""""""""""""
+print('""""""""""""""""""""""""""""""""""""""""""""""')
+print('KNN')
+print('"""""""""""""""""""""""""""""""""""""""""""""')
 
 start_t = time.time()
 
@@ -155,9 +155,9 @@ print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.
 print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_indexKNN],np.mean(KNN_perf_record_test[best_indexKNN]),np.std(KNN_perf_record_test[best_indexKNN])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
 
-"""""""""""""""""""""""""""""""""""""""""""""
-SVM
-"""""""""""""""""""""""""""""""""""""""""""""
+print('""""""""""""""""""""""""""""""""""""""""""""""')
+print('SVM')
+print('"""""""""""""""""""""""""""""""""""""""""""""')
 
 SVM_perf_record_train_CV = {}
 SVM_perf_record_test_CV = {}
@@ -229,6 +229,9 @@ print('SVM - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(
 print('SVM - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (SVM_perf_record_test[best_indexSVM],np.mean(SVM_perf_record_test[best_indexSVM]),np.std(SVM_perf_record_test[best_indexSVM])))
 print('Time elapsed for SVM %f' % elapsed_t['SVM'])
 
+print('""""""""""""""""""""""""""""""""""""""""""""""')
+print('XGBoost')
+print('"""""""""""""""""""""""""""""""""""""""""""""')
 """""""""""""""""""""""""""""""""""""""""""""
 XGBoost
 https://xgboost.ai/about
@@ -357,13 +360,13 @@ print('Time elapsed for XGB %f' % elapsed_t['XGB'])
 #
 #start_t = time.time()
 #
-#max_individuals=60
+#max_individuals=64
 #max_depth=6
 #individuals={}
 #for i in range(0,max_individuals):
 #    individuals[i]=[]
-#    layers=int(np.round(np.random.rand(1)*max_depth)+1)
-#    units=np.ceil(np.random.rand(1,layers)*100)[0]
+#    layers=int(np.round(np.random.rand(1)*(max_depth -1) +1)+1)
+#    units=np.ceil(np.random.rand(1,layers)*45 +5)[0]  
 #    act_func=0;#np.ceil(np.random.rand(1,layers)*7)[0]
 #    for j in range(0,layers):
 #        individuals[i].append((units[j],act_func[j]))
