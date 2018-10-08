@@ -125,7 +125,7 @@ for n_neighbors in n_neighbors_list:
 
         knn_clf = neighbors.KNeighborsClassifier(n_neighbors,metric='euclidean')
         knn_clf.fit(X_train_CV, np.ravel(Y_train_CV))
-        Y_pred_train_CV=knn_clf.predict(X_train_CV).reshape(-1,1)
+        Y_pred_train_CV=knn_clf.predict(X_train_CV).reshape(-1,1) #TOFIX quitar evaluación del cto de X_TRAIN_CV
         #Y_pred_train_CV=Y_pred_train.reshape(-1,1)
         Y_pred_test_CV=knn_clf.predict(X_test_CV).reshape(-1,1)
         Y_pred_test=knn_clf.predict(X_test_norm).reshape(-1,1)
@@ -315,9 +315,10 @@ print('XGB - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(
 print('XGB - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (XGB_perf_record_test[best_indexXGB],np.mean(XGB_perf_record_test[best_indexXGB]),np.std(XGB_perf_record_test[best_indexXGB])))
 print('Time elapsed for XGB %f' % elapsed_t['XGB'])
 
-#"""
-#DNN
-#"""
+#TOFIX probar los DNNs y ver lo q tarda, decidir etc
+#print('""""""""""""""""""""""""""""""""""""""""""""""')
+#print('DNN')
+#print('"""""""""""""""""""""""""""""""""""""""""""""')
 #import keras.utils
 #
 #def clasif_model(individual):
