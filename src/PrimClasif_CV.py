@@ -48,6 +48,20 @@ from tools import calc_error_n_plot
 
 import time
 
+##### Printing to a file
+import sys
+orig_stdout = sys.stdout
+bufsize = 10
+f = open('RESULTADOS_9_Oct.txt', 'w', buffering=bufsize)
+sys.stdout = f
+
+#MANERA ALTERNATIVA PARA PODER CONTROLAR LO QUE SE VA EJECUTANDO --> 
+#f = open(filename,'w')
+#print >>f, 'whatever'     # Python 2.x
+#print('whatever', file=f) # Python 3.x
+
+#####
+
 elapsed_t={}
 clasf_report={}
 prefijo=''
@@ -114,7 +128,7 @@ for n_neighbors in n_neighbors_list:
         fold+=1
         
         start_time = time.time()
-        print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds))
+        print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds)) 
 
         if n_neighbors not in KNN_perf_record_train_CV: KNN_perf_record_train_CV[n_neighbors] = np.zeros(n_folds)
         if n_neighbors not in KNN_perf_record_test_CV: KNN_perf_record_test_CV[n_neighbors] = np.zeros(n_folds)
@@ -451,3 +465,7 @@ print('XGB - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max
 print('XGB - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_test_CV.values())),XGB_perf_mean_record_test_CV_std[best_indexXGB],config_listXGB[best_indexXGB]))
 print('XGB - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (XGB_perf_record_test[best_indexXGB],np.mean(XGB_perf_record_test[best_indexXGB]),np.std(XGB_perf_record_test[best_indexXGB])))
 print('Time elapsed for XGB %f' % elapsed_t['XGB'])
+
+sys.stdout = orig_stdout
+f.close()
+
