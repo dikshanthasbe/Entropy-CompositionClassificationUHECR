@@ -6,7 +6,7 @@ Created on Tue Jul 24 09:55:10 2018
 @author: alberto
 """
 
-
+#%% INTRO 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -103,6 +103,9 @@ X_test_norm,X_val,Y_test,Y_val=train_test_split(X_testYval_norm,
 #Y_train=Y_train[0:500]
 
 n_folds=3
+k_fold = StratifiedKFold(n_splits=n_folds)
+
+#%% KNN
 
 print('""""""""""""""""""""""""""""""""""""""""""""""')
 print('KNN')
@@ -120,7 +123,6 @@ KNN_perf_mean_record_train_CV = {}
 KNN_perf_mean_record_train_CV_std = {}
 KNN_perf_mean_record_test_CV = {}
 KNN_perf_mean_record_test_CV_std = {}
-k_fold = StratifiedKFold(n_splits=n_folds)
 
 for n_neighbors in n_neighbors_list:
     fold=-1
@@ -169,6 +171,7 @@ print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.
 print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_indexKNN],np.mean(KNN_perf_record_test[best_indexKNN]),np.std(KNN_perf_record_test[best_indexKNN])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
 
+#%% SVM
 print('""""""""""""""""""""""""""""""""""""""""""""""')
 print('SVM')
 print('"""""""""""""""""""""""""""""""""""""""""""""')
@@ -243,6 +246,7 @@ print('SVM - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(
 print('SVM - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (SVM_perf_record_test[best_indexSVM],np.mean(SVM_perf_record_test[best_indexSVM]),np.std(SVM_perf_record_test[best_indexSVM])))
 print('Time elapsed for SVM %f' % elapsed_t['SVM'])
 
+#%% XGBOOST
 print('""""""""""""""""""""""""""""""""""""""""""""""')
 print('XGBoost')
 print('"""""""""""""""""""""""""""""""""""""""""""""')
@@ -263,7 +267,7 @@ XGB_perf_mean_record_train_CV_std = {}
 
 start_t = time.time()
 
-max_depth_list=np.arange(3,6,1)
+max_depth_list=np.arange(3,7,1)
 eta_list=np.arange(0.05,1,0.05)
 
 config_listXGB=[]
@@ -299,8 +303,8 @@ for config in config_listXGB:
         dtest = xgb.DMatrix(X_test_norm,label=Y_test)
 
         # specify parameters via map
-        param = {'max_depth':config[0], 'eta':config[1], 'silent':1, 'objective':'multi:softmax', 'num_class':5 }
-        num_round = 2
+        param = {'max_depth':config[0], 'eta':config[1], 'silent':1, 'objective':'multi:softmax', 'num_class':5 , 'nthread': 4}
+        num_round = 150
         bst = xgb.train(param, dtrain_CV, num_round)
         # make prediction
         #Y_pred_test = bst.predict(dtest)
@@ -313,7 +317,7 @@ for config in config_listXGB:
         XGB_perf_record_test_CV[config_idx][fold] = accuracy_score(Y_test_CV,Y_pred_test_CV)
         XGB_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
         
-        print("--- %s seconds ---" % (time.time() - start_time))
+        print("--- %s seconds --- trncv: %s testcv: %s test: %s" % ((time.time() - start_time), XGB_perf_record_train_CV[config_idx][fold], XGB_perf_record_test_CV[config_idx][fold], XGB_perf_record_test[config_idx][fold]))
    
     if config_idx not in XGB_perf_mean_record_train_CV: XGB_perf_mean_record_train_CV[config_idx] = np.mean(XGB_perf_record_train_CV[config_idx])
     if config_idx not in XGB_perf_mean_record_train_CV_std: XGB_perf_mean_record_train_CV_std[config_idx] = np.std(XGB_perf_record_train_CV[config_idx])
@@ -328,6 +332,8 @@ print('XGB - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max
 print('XGB - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_test_CV.values())),XGB_perf_mean_record_test_CV_std[best_indexXGB],config_listXGB[best_indexXGB]))
 print('XGB - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (XGB_perf_record_test[best_indexXGB],np.mean(XGB_perf_record_test[best_indexXGB]),np.std(XGB_perf_record_test[best_indexXGB])))
 print('Time elapsed for XGB %f' % elapsed_t['XGB'])
+
+#%% SVM
 
 #TOFIX probar los DNNs y ver lo q tarda, decidir etc
 #print('""""""""""""""""""""""""""""""""""""""""""""""')
@@ -450,9 +456,15 @@ print('Time elapsed for XGB %f' % elapsed_t['XGB'])
 #print('DNN - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (DNN_perf_record_test[best_indexDNN],np.mean(DNN_perf_record_test[best_indexDNN]),np.std(DNN_perf_record_test[best_indexDNN])))
 #print('Time elapsed for DNN %f' % elapsed_t['DNN'])
 
+#%% REPORT
+
 """""""""""""""""""""""""""""""""""""""""""""
 Generate report
 """""""""""""""""""""""""""""""""""""""""""""
+
+print('"""""""""""""""""""""""""""""""""""""""""""""')
+print('""""""""""""""""REPORT"""""""""""""""""""""""')
+print('"""""""""""""""""""""""""""""""""""""""""""""')
 print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
 print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_indexKNN],best_indexKNN))
 print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_indexKNN],np.mean(KNN_perf_record_test[best_indexKNN]),np.std(KNN_perf_record_test[best_indexKNN])))
