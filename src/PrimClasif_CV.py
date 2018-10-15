@@ -132,7 +132,7 @@ for n_neighbors in n_neighbors_list:
         fold+=1
         
         start_time = time.time()
-        print('VAMOS por n_neigbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds)) 
+        print('VAMOS por n_neighbour %d y por la fold %d / %d' % (n_neighbors,fold,n_folds)) 
 
         #if n_neighbors not in KNN_perf_record_train_CV: KNN_perf_record_train_CV[n_neighbors] = np.zeros(n_folds)
         if n_neighbors not in KNN_perf_record_test_CV: KNN_perf_record_test_CV[n_neighbors] = np.zeros(n_folds)
@@ -154,12 +154,12 @@ for n_neighbors in n_neighbors_list:
         KNN_perf_record_test[n_neighbors][fold] = accuracy_score(Y_test,Y_pred_test)
 
         print("--- %s seconds ---" % (time.time() - start_time))
-    
+        f.flush();
+
     #if n_neighbors not in KNN_perf_mean_record_train_CV: KNN_perf_mean_record_train_CV[n_neighbors] = np.mean(KNN_perf_record_train_CV[n_neighbors])
     #if n_neighbors not in KNN_perf_mean_record_train_CV_std: KNN_perf_mean_record_train_CV_std[n_neighbors] = np.std(KNN_perf_record_train_CV[n_neighbors])
     if n_neighbors not in KNN_perf_mean_record_test_CV: KNN_perf_mean_record_test_CV[n_neighbors] = np.mean(KNN_perf_record_test_CV[n_neighbors])
     if n_neighbors not in KNN_perf_mean_record_test_CV_std: KNN_perf_mean_record_test_CV_std[n_neighbors] = np.std(KNN_perf_record_test_CV[n_neighbors])
-    
 #calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
 #clasf_report_val['KNN']=calc_error_n_plot(Y_val,Y_pred_val,'VALIDATION')
 #clasf_report['KNN']=calc_error_n_plot(Y_test,Y_pred_test,'TEST')
@@ -168,8 +168,8 @@ elapsed_t['knn'] = time.time() - start_t
 
 best_indexKNN=list(KNN_perf_mean_record_test_CV.keys())[np.argmax(list(KNN_perf_mean_record_test_CV.values()))]
 
-#print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
-print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_indexKNN],best_indexKNN))
+#print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
+print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_indexKNN],best_indexKNN))
 print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_indexKNN],np.mean(KNN_perf_record_test[best_indexKNN]),np.std(KNN_perf_record_test[best_indexKNN])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
 
@@ -229,12 +229,13 @@ for config in config_listSVM:
         SVM_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
 
         print("--- %s seconds ---" % (time.time() - start_time))
-    
+        f.flush();
+
     #if config_idx not in SVM_perf_mean_record_train_CV: SVM_perf_mean_record_train_CV[config_idx] = np.mean(SVM_perf_record_train_CV[config_idx])
     #if config_idx not in SVM_perf_mean_record_train_CV_std: SVM_perf_mean_record_train_CV_std[config_idx] = np.std(SVM_perf_record_train_CV[config_idx])
     if config_idx not in SVM_perf_mean_record_test_CV: SVM_perf_mean_record_test_CV[config_idx] = np.mean(SVM_perf_record_test_CV[config_idx])
     if config_idx not in SVM_perf_mean_record_test_CV_std: SVM_perf_mean_record_test_CV_std[config_idx] = np.std(SVM_perf_record_test_CV[config_idx])    
-
+    
 elapsed_t['SVM'] = time.time() - start_t
 
 #calc_error_n_plot(Y_train,Y_pred_train,'TRAIN')
@@ -320,7 +321,8 @@ for config in config_listXGB:
         XGB_perf_record_test[config_idx][fold] = accuracy_score(Y_test,Y_pred_test)
         
         print("--- %s seconds ---  testcv: %s test: %s" % ((time.time() - start_time), XGB_perf_record_test_CV[config_idx][fold], XGB_perf_record_test[config_idx][fold]))
-   
+        f.flush();
+
     #if config_idx not in XGB_perf_mean_record_train_CV: XGB_perf_mean_record_train_CV[config_idx] = np.mean(XGB_perf_record_train_CV[config_idx])
     #if config_idx not in XGB_perf_mean_record_train_CV_std: XGB_perf_mean_record_train_CV_std[config_idx] = np.std(XGB_perf_record_train_CV[config_idx])
     if config_idx not in XGB_perf_mean_record_test_CV: XGB_perf_mean_record_test_CV[config_idx] = np.mean(XGB_perf_record_test_CV[config_idx])
@@ -443,6 +445,7 @@ for config in config_listDNN:
         DNN_perf_record_test[config_idx][fold] = accuracy_score(hot_Y_test,hot_Y_pred_test)
         
         print("--- %s seconds ---" % (time.time() - start_time))
+        f.flush();
     
     #if config_idx not in DNN_perf_mean_record_train_CV: DNN_perf_mean_record_train_CV[config_idx] = np.mean(DNN_perf_record_train_CV[config_idx])
     #if config_idx not in DNN_perf_mean_record_train_CV_std: DNN_perf_mean_record_train_CV_std[config_idx] = np.std(DNN_perf_record_train_CV[config_idx])
@@ -467,8 +470,8 @@ Generate report
 print('"""""""""""""""""""""""""""""""""""""""""""""')
 print('""""""""""""""""REPORT"""""""""""""""""""""""')
 print('"""""""""""""""""""""""""""""""""""""""""""""')
-print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
-print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neigbout %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_indexKNN],best_indexKNN))
+print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
+print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_indexKNN],best_indexKNN))
 print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_indexKNN],np.mean(KNN_perf_record_test[best_indexKNN]),np.std(KNN_perf_record_test[best_indexKNN])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
 print('SVM - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(SVM_perf_mean_record_train_CV.values())),SVM_perf_mean_record_train_CV_std[best_indexSVM],config_listSVM[best_indexSVM]))
