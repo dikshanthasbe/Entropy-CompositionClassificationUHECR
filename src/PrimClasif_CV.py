@@ -5,6 +5,7 @@ Created on Tue Jul 24 09:55:10 2018
 
 @author: alberto, jherrera
 """
+#TOFIX :  para obtener el rendimieitno en test, hay que reentrenar con todo el cto de TRN y testear sobre TEST con los hiperparámetros optimos obtenidos!!!
 
 #%% INTRO 
 import numpy as np
@@ -463,25 +464,24 @@ print('Time elapsed for DNN %f' % elapsed_t['DNN'])
 
 #%% REPORT
 
-"""""""""""""""""""""""""""""""""""""""""""""
-Generate report
-"""""""""""""""""""""""""""""""""""""""""""""
-
 print('"""""""""""""""""""""""""""""""""""""""""""""')
 print('""""""""""""""""REPORT"""""""""""""""""""""""')
 print('"""""""""""""""""""""""""""""""""""""""""""""')
-print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
+#print('KNN - Best\'s train CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_train_CV.values())),KNN_perf_mean_record_train_CV_std[best_indexKNN],best_indexKNN))
 print('KNN - Best\'s test CV accuracy %f (std= %f ) for n_neighbour %d \n' % (np.max(list(KNN_perf_mean_record_test_CV.values())),KNN_perf_mean_record_test_CV_std[best_indexKNN],best_indexKNN))
 print('KNN - Test accuracy %s , mean: %f (std= %f) \n' % (KNN_perf_record_test[best_indexKNN],np.mean(KNN_perf_record_test[best_indexKNN]),np.std(KNN_perf_record_test[best_indexKNN])))
 print('Time elapsed for kNN %f' % elapsed_t['knn'])
-print('SVM - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(SVM_perf_mean_record_train_CV.values())),SVM_perf_mean_record_train_CV_std[best_indexSVM],config_listSVM[best_indexSVM]))
+#print('SVM - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(SVM_perf_mean_record_train_CV.values())),SVM_perf_mean_record_train_CV_std[best_indexSVM],config_listSVM[best_indexSVM]))
 print('SVM - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(SVM_perf_mean_record_test_CV.values())),SVM_perf_mean_record_test_CV_std[best_indexSVM],config_listSVM[best_indexSVM]))
 print('SVM - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (SVM_perf_record_test[best_indexSVM],np.mean(SVM_perf_record_test[best_indexSVM]),np.std(SVM_perf_record_test[best_indexSVM])))
 print('Time elapsed for SVM %f' % elapsed_t['SVM'])
-print('XGB - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_train_CV.values())),XGB_perf_mean_record_train_CV_std[best_indexXGB],config_listXGB[best_indexXGB]))
+#print('XGB - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_train_CV.values())),XGB_perf_mean_record_train_CV_std[best_indexXGB],config_listXGB[best_indexXGB]))
 print('XGB - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(XGB_perf_mean_record_test_CV.values())),XGB_perf_mean_record_test_CV_std[best_indexXGB],config_listXGB[best_indexXGB]))
 print('XGB - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (XGB_perf_record_test[best_indexXGB],np.mean(XGB_perf_record_test[best_indexXGB]),np.std(XGB_perf_record_test[best_indexXGB])))
 print('Time elapsed for XGB %f' % elapsed_t['XGB'])
-
+#print('DNN - Best\'s train CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(DNN_perf_mean_record_train_CV.values())),DNN_perf_mean_record_train_CV_std[best_indexDNN],config_listDNN[best_indexDNN]))
+print('DNN - Best\'s test CV accuracy %f (std= %f ) for config %s \n' % (np.max(list(DNN_perf_mean_record_test_CV.values())),DNN_perf_mean_record_test_CV_std[best_indexDNN],config_listDNN[best_indexDNN]))
+print('DNN - Best\'s Test accuracy %s , mean: %f (std= %f) \n' % (DNN_perf_record_test[best_indexDNN],np.mean(DNN_perf_record_test[best_indexDNN]),np.std(DNN_perf_record_test[best_indexDNN])))
+print('Time elapsed for DNN %f' % elapsed_t['DNN'])
 sys.stdout = orig_stdout
 f.close()
