@@ -1,20 +1,9 @@
-# NCA-PrimClasif
+#  Entropy-CompositionClassificationUHECR
 
-This project is for the paper submitted to NCA, it performs variable selection and model design to classify (multi-class) the type of particle in an event of UHECR.
 
-Selección de variables -->      3     2     1     4     5 
+This project is for the paper submitted to Entropy journal entitled Composition Classification of Ultra-High EnergyCosmic Rays, it performs variable selection and model design to classify (multi-class) the type of particle in an event of UHECR.
 
-1 NALLParticlesTotal
-
-2 MUTotal
-
-3 ELTOTAL
-
-4 Zenith
-
-5 Energy 
-
-Original data includes the following varviables:
+Original data includes the following variables:
 
 1 NALLParticlesTotal: number of particles generated at ground level
 
@@ -29,3 +18,18 @@ Original data includes the following varviables:
 6 Energy: Particle energy in GeV
 
 7 Zfirst : Altitude of the particle's first interaction
+
+The 
+
+Final variable selection -->      3     2     1     4     5 
+
+1 NALLParticlesTotal
+
+2 MUTotal
+
+3 ELTOTAL
+
+4 Zenith
+
+5 Energy 
+
